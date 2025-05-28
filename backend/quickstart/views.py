@@ -2,10 +2,13 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import Group
+from django.contrib.auth import get_user_model
 from .serializers import UserSerializer, GroupSerializer
 from django.shortcuts import get_object_or_404
 
+
+User = get_user_model()
 
 
 class UserList(APIView):
@@ -46,14 +49,24 @@ class UserDetail(APIView):
         user.delete()
         return Response(status=204)
 
-        
+from rest_framework.parsers import MultiPartParser, FormParser 
+
 class CurrentUserView(APIView):
-    
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
 
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+
+    def patch(self, request):
+        serializer = UserSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=400)
+        
     
 
 class GroupList(APIView):

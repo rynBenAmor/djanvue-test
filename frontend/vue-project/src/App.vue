@@ -5,6 +5,7 @@
 
     <!-- Show login form only if not logged in -->
     <login-form v-if="!username" @login-success="handleLoginSuccess" />
+
     
     <!-- Show routed views only if logged in -->
     <router-view v-else />
@@ -13,6 +14,7 @@
 
 <script>
 import LoginForm from './components/LoginForm.vue'
+
 import axios from 'axios'
 
 export default {
