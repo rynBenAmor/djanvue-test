@@ -1,11 +1,14 @@
 <template>
-    <div v-if="profilePicUrl" class="container mt-4">
+    <!-- Loader -->
+    <loader-spinner v-if="loading" loading="loading"></loader-spinner>
+    <div v-else-if="user.id" class="container mt-4">
+        <h1 class="text-center text-success">Welcome, {{ user.username }}!</h1>
         <h2 class="mb-3">Profile Picture</h2>
 
         <!-- Display current profile picture -->
         <div class="mb-3">
-            <img v-if="profilePicUrl" :src="profilePicUrl" alt="Profile" class="img-thumbnail" style="max-width: 200px;"
-                @error="onImgError" />
+            <img v-if="user.get_profile_pic" :src="user.get_profile_pic" alt="Profile" class="img-thumbnail"
+                style="max-width: 200px;" @error="onImgError" />
             <div v-else class="text-muted">No profile picture.</div>
         </div>
 
@@ -19,19 +22,25 @@
             {{ message }}
         </div>
     </div>
+
+    <h1 v-else class="text-center text-info">Please Log In</h1>
 </template>
 
 <script>
 import axios from 'axios';
 import { BACKEND_URL } from '@/config';
-
+import LoaderSpinner from '@/components/LoaderSpinner.vue';
 
 export default {
-    name: 'ProfilePic',
+    name: 'HomeView',
+    components: {LoaderSpinner, },
+    
     data() {
         return {
+            user: {},
+            loading: false,
             selectedFile: null,
-            profilePicUrl: null,
+
             message: '',
             success: false,
         };
@@ -44,20 +53,24 @@ export default {
             this.selectedFile = e.target.files[0];
         },
         fetchProfile() {
-            axios.get(`${BACKEND_URL}/user/me/`, {
+            this.loading = true;
+            axios.get(BACKEND_URL + '/user/me/', {
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('access_token')
                 }
             })
                 .then(res => {
 
-                    this.profilePicUrl = res.data.get_profile_pic;
+                    this.user = res.data;
+
                     this.message = '';
                 })
                 .catch(err => {
                     console.error(err);
                     this.message = 'Failed to load profile.';
                     this.success = false;
+                }).finally(() => {
+                    this.loading = false;
                 });
         },
         uploadPicture() {
@@ -71,11 +84,11 @@ export default {
                 }
             })
                 .then(res => {
-
-                    this.profilePicUrl = res.data.get_profile_pic;
+                    this.user = res.data;
                     this.message = 'Profile picture updated!';
                     this.success = true;
                     this.selectedFile = null;
+                    this.fetchProfile();
                 })
                 .catch(err => {
                     console.error(err);

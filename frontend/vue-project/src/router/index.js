@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Login from '../components/LoginForm.vue'
+import Login from '../views/LoginView.vue'
 import HomeView from '@/views/HomeView.vue'
 import BlogView from '@/views/BlogListView.vue'
 import BlogPostView from '@/views/BlogPostView.vue'
@@ -10,7 +10,7 @@ const routes = [
     name: 'home',
     component: HomeView,
     meta: {
-      requiresAuth: true,
+      requiresAuth: false,
     },
   },
   {

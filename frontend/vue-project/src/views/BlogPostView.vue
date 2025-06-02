@@ -2,12 +2,9 @@
     <div class="container">
 <h1>post detail</h1>
         <div class="row">
+
             <!-- Loader -->
-            <div v-if="loading" class="d-flex justify-content-center my-4">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            </div>
+             <loader-spinner v-if="loading" loading="loading"></loader-spinner>
 
             <div v-else-if="post.id" class="col-12 my-3">
                 <h2 class="display-2"> {{ post.title }} </h2>
@@ -29,8 +26,12 @@
 <script>
 import axios from 'axios';
 import { BACKEND_URL } from '@/config';
+import LoaderSpinner from '@/components/LoaderSpinner.vue';
+
+
 export default {
     name: 'BlogPostView',
+    components: { LoaderSpinner },
 
     data() {
         return {

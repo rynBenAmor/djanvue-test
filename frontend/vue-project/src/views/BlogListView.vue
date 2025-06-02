@@ -3,11 +3,8 @@
         <h2 class="mb-3">Blog Posts</h2>
         <div class="row justify-content-center gap-2">
             <!-- Loader -->
-            <div v-if="loading" class="d-flex justify-content-center my-4">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            </div>
+             <loader-spinner v-if="loading" loading="loading"></loader-spinner>
+            
             <!-- Display blog posts -->
             <div v-else-if="posts.length === 0" class="alert alert-info">No blog posts available.</div>
             
@@ -33,9 +30,13 @@
 <script>
 import axios from 'axios';
 import { BACKEND_URL } from '@/config';
+import LoaderSpinner from '@/components/LoaderSpinner.vue';
 
 export default {
     name: 'BlogView',
+    components: {LoaderSpinner,},
+        
+    
     data() {
         return {
             posts: [],

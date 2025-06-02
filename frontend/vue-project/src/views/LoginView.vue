@@ -18,6 +18,8 @@
 
 <script>
 import axios from 'axios';
+import { BACKEND_URL } from '@/config'; // Adjust the import path as necessary
+import { useUserStore } from '@/stores/user';
 
 export default {
   data() {
@@ -31,7 +33,7 @@ export default {
     async login() {
       this.error = null;
       try {
-        const res = await axios.post('http://127.0.0.1:8000/api/token/', {
+        const res = await axios.post(BACKEND_URL + '/token/', {
           username: this.username,
           password: this.password,
         });
@@ -44,13 +46,18 @@ export default {
         axios.defaults.headers.common['Authorization'] = 'Bearer ' + accessToken;
 
         // Fetch current user info after login
-        const userRes = await axios.get('http://127.0.0.1:8000/api/user/me/');
+        const userRes = await axios.get(BACKEND_URL + '/user/me/');
         const currentUsername = userRes.data.username;
 
-        alert('Login successful!');
+        // Use Pinia store
+        const userStore = useUserStore();
+        userStore.setUser(currentUsername);
 
         // Emit event to parent with username
         this.$emit('login-success', { username: currentUsername, accessToken });
+
+        // Optionally redirect or show a message
+        // this.$router.push('/'); // Uncomment to redirect after login
 
       } catch (err) {
         this.error = 'Login failed: Invalid credentials.';
