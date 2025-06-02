@@ -42,14 +42,11 @@ export default {
     components: { LogoutButton },
     data() {
         return {
+            userStore: useUserStore(), // Initialize user store
             username: null,
         };
     },
-    computed: {
-        userStore() {
-            return useUserStore();
-        },
-    },
+
     mounted() {
         this.username = this.userStore.username;
     },

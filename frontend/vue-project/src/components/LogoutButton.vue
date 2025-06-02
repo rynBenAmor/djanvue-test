@@ -14,12 +14,12 @@ import { useUserStore } from '@/stores/user';
 export default {
     name: 'LogoutButton',
 
-    computed: {
-        // initiate the store reactively and make it a property
-        userStore() {
-            return useUserStore();
-        }
+    data() {
+        return {
+            userStore: useUserStore(), //initialize user store
+        };
     },
+
     methods: {
         async logout() {
             try {

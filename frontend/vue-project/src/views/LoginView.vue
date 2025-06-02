@@ -1,7 +1,8 @@
 <template>
-  <div class="container mt-5" style="max-width: 400px;">
-    <h2>Login</h2>
-    <form @submit.prevent="login">
+  <div class="container mt-5" >
+    <h1 class="h2 text-success text-center mb-3"> {{ getUsername }} - authenticated: {{ isLoggedIn }} </h1>
+    <h2 class="text-center">Login</h2>
+    <form @submit.prevent="login" style="max-width: 400px;" class="mx-auto">
       <div class="mb-3">
         <label for="username" class="form-label">Username</label>
         <input v-model="username" id="username" class="form-control" required />
@@ -24,10 +25,19 @@ import { useUserStore } from '@/stores/user';
 export default {
   data() {
     return {
+      userStore: useUserStore(),
       username: '',
       password: '',
       error: null,
     };
+  },
+  computed:{
+    getUsername() {
+      return this.userStore.getUsername || 'Guest';
+    },
+    isLoggedIn() {
+      return this.userStore.isLoggedIn;
+    }
   },
   methods: {
     async login() {
@@ -49,15 +59,14 @@ export default {
         const userRes = await axios.get(BACKEND_URL + '/user/me/');
         const currentUsername = userRes.data.username;
 
-        // Use Pinia store
-        const userStore = useUserStore();
-        userStore.setUser(currentUsername);
+        // Use Pinia store        
+        this.userStore.setUser(currentUsername);
 
         // Emit event to parent with username
         this.$emit('login-success', { username: currentUsername, accessToken });
 
         // Optionally redirect or show a message
-        // this.$router.push('/'); // Uncomment to redirect after login
+        //this.$router.push('/'); // Uncomment to redirect after login
 
       } catch (err) {
         this.error = 'Login failed: Invalid credentials.';

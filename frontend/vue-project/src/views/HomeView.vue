@@ -23,7 +23,7 @@
         </div>
     </div>
 
-    <h1 v-else class="text-center text-info">Please Log In</h1>
+    <h1 v-else class="text-center text-info">Please Log In to see your profile !</h1>
 </template>
 
 <script>
@@ -59,19 +59,17 @@ export default {
                     Authorization: 'Bearer ' + localStorage.getItem('access_token')
                 }
             })
-                .then(res => {
-
-                    this.user = res.data;
-
-                    this.message = '';
-                })
-                .catch(err => {
-                    console.error(err);
-                    this.message = 'Failed to load profile.';
-                    this.success = false;
-                }).finally(() => {
-                    this.loading = false;
-                });
+            .then(res => {
+                this.user = res.data;
+                this.message = '';
+            })
+            .catch(err => {
+                console.error(err);
+                this.message = 'Failed to load profile.';
+                this.success = false;
+            }).finally(() => {
+                this.loading = false;
+            });
         },
         uploadPicture() {
             const formData = new FormData();
@@ -96,6 +94,7 @@ export default {
                     this.success = false;
                 });
         },
+
         onImgError(e) {
             e.target.src = 'https://via.placeholder.com/200?text=No+Image';
         }
