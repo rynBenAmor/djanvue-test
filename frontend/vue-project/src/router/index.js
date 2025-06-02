@@ -1,4 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useUserStore } from '@/stores/user'
+import { useMessageStore } from '@/stores/messages'
+// Importing views
 import Login from '../views/LoginView.vue'
 import HomeView from '@/views/HomeView.vue'
 import BlogView from '@/views/BlogListView.vue'
@@ -10,7 +13,7 @@ const routes = [
     name: 'home',
     component: HomeView,
     meta: {
-      requiresAuth: false,
+      requiresAuth: true, // Assuming home requires authentication
     },
   },
   {
@@ -42,6 +45,20 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+})
+
+
+// Global auth guard
+router.beforeEach((to, from, next) => {
+  const userStore = useUserStore()
+  const messageStore = useMessageStore()
+
+  if (to.meta.requiresAuth && !userStore.isAuthenticated) {
+    messageStore.setMessage('You must be logged in to view this page.', 'warning')
+    next('/login')
+  } else {
+    next()
+  }
 })
 
 export default router
