@@ -1,5 +1,5 @@
 <template>
-    <div class="container mt-4">
+    <div v-if="profilePicUrl" class="container mt-4">
         <h2 class="mb-3">Profile Picture</h2>
 
         <!-- Display current profile picture -->
@@ -23,8 +23,8 @@
 
 <script>
 import axios from 'axios';
+import { BACKEND_URL } from '@/config';
 
-const BACKEND_URL = 'http://127.0.0.1:8000';
 
 export default {
     name: 'ProfilePic',
@@ -44,7 +44,7 @@ export default {
             this.selectedFile = e.target.files[0];
         },
         fetchProfile() {
-            axios.get('/api/user/me/', {
+            axios.get(`${BACKEND_URL}/user/me/`, {
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('access_token')
                 }
@@ -64,7 +64,7 @@ export default {
             const formData = new FormData();
             formData.append('profile_pic', this.selectedFile);
 
-            axios.patch(BACKEND_URL + '/api/user/me/', formData, {
+            axios.patch(BACKEND_URL + '/user/me/', formData, {
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('access_token'),
                     'Content-Type': 'multipart/form-data'
