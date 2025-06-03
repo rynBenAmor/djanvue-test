@@ -35,12 +35,6 @@
                                     <div class="message-content">
                                         {{ message.message }}
                                     </div>
-                                    <div v-if="message.localId" class="message-status">
-                                        <i v-if="pendingMessages[message.localId] === 'sending'"
-                                            class="fas fa-spinner fa-spin"></i>
-                                        <i v-else-if="pendingMessages[message.localId] === 'delivered'"
-                                            class="fas fa-check text-muted"></i>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -74,14 +68,11 @@ export default {
             connectionStatus: 'Disconnected',
             username: '',
             userId: '',
-            pendingMessages: {}, // Track messages that are being sent
-            localIdCounter: 0
+
+
         }
     },
     created() {
-        // Generate a random username (matches your backend logic)
-        this.userId = this.generateShortId();
-        this.username = `User#${this.userId}`;
 
         this.connectWebSocket();
     },
@@ -89,13 +80,9 @@ export default {
         this.disconnectWebSocket();
     },
     methods: {
-        generateShortId() {
-            // Generate a random 8-character ID similar to your Python code
-            return Math.random().toString(36).substring(2, 10);
-        },
+
         connectWebSocket() {
-            // Adjust the WebSocket URL according to your Django setup
-            //const wsScheme = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+
             const wsUrl = 'ws://127.0.0.1:8000/ws/chat/';
 
             this.socket = new WebSocket(wsUrl);
@@ -123,39 +110,40 @@ export default {
                 this.connectionStatus = 'Error';
             };
 
-            this.socket.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-
-                if (data.is_system) {
-                    // System message (user joined/left)
-                    this.messages.push({
-                        message: data.message,
-                        is_system: true
-                    });
-                } else {
-                    // Regular chat message
-                    const message = {
-                        message: data.message,
-                        sender_id: data.sender_id,
-                        sender_name: data.sender_name,
-                        is_user: data.is_user,
-                        localId: data.localId
-                    };
-
-                    // If this is our own message (identified by localId), update its status
-                    if (data.localId && this.pendingMessages[data.localId]) {
-                        this.pendingMessages[data.localId] = 'delivered';
-                    }
-
-                    this.messages.push(message);
-                }
-
-                // Scroll to bottom of messages
-                this.$nextTick(() => {
-                    const container = this.$refs.messagesContainer;
-                    container.scrollTop = container.scrollHeight;
-                });
-            };
+this.socket.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    
+    // Handle user info message (sent only to this client)
+    if (data.type === 'user_info') {
+        this.userId = data.user_id;
+        this.username = data.username;
+        return;
+    }
+    
+    // Determine if message is from current user
+    const isCurrentUser = data.sender_id === this.userId;
+    
+    if (data.is_system) {
+        // System message
+        this.messages.push({
+            message: data.message,
+            is_system: true
+        });
+    } else {
+        // Regular message
+        this.messages.push({
+            message: data.message,
+            sender_id: data.sender_id,
+            sender_name: data.sender_name,
+            is_user: isCurrentUser
+        });
+    }
+    
+    this.$nextTick(() => {
+        const container = this.$refs.messagesContainer;
+        container.scrollTop = container.scrollHeight;
+    });
+};
         },
         disconnectWebSocket() {
             if (this.socket) {
@@ -165,35 +153,16 @@ export default {
         sendMessage() {
             if (!this.newMessage.trim() || !this.isConnected) return;
 
-            const localId = `msg-${Date.now()}-${this.localIdCounter++}`;
-            const message = {
-                message: this.newMessage,
-                localId: localId
-            };
-
-            // Add to pending messages (shows loading spinner)
-            this.pendingMessages[localId] = 'sending';
-
-            // Add to messages immediately (optimistic UI)
-            this.messages.push({
+            // Send the message to the backend
+            this.socket.send(JSON.stringify({
                 message: this.newMessage,
                 sender_id: this.userId,
-                sender_name: this.username,
-                is_user: true,
-                localId: localId
-            });
+                sender_name: this.username
+            }));
 
-            // Clear input
+
+
             this.newMessage = '';
-
-            // Scroll to bottom
-            this.$nextTick(() => {
-                const container = this.$refs.messagesContainer;
-                container.scrollTop = container.scrollHeight;
-
-                // Send the message
-                this.socket.send(JSON.stringify(message));
-            });
         },
         isCurrentUser(senderId) {
             return senderId === this.userId;
