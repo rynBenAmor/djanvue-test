@@ -74,7 +74,7 @@ export default {
     },
     created() {
 
-        this.connectWebSocket();
+        this.connectWebSocket(); //connect and attach event handlers (listeners)
     },
     beforeUnmount() {
         this.disconnectWebSocket();
@@ -120,8 +120,6 @@ export default {
                     return;
                 }
 
-
-
                 if (data.is_system) {
                     // System message
                     this.messages.push({
@@ -144,11 +142,13 @@ export default {
                 });
             };
         },
+
         disconnectWebSocket() {
             if (this.socket) {
                 this.socket.close();
             }
         },
+
         sendMessage() {
             if (!this.newMessage.trim() || !this.isConnected) return;
 
@@ -159,10 +159,9 @@ export default {
                 sender_name: this.username
             }));
 
-
-
             this.newMessage = '';
         },
+
         isCurrentUser(senderId) {
             return senderId === this.userId;
         }
@@ -172,6 +171,32 @@ export default {
 
 
 <style scoped>
+/*
+📡 WebSocket Lifecycle Guide (Browser)
+
+1. new WebSocket(url)
+   - Opens a connection to the server (ws:// or wss://)
+
+2. socket.onopen
+   - Triggered when the connection is established
+   - Good place to send an initial message or log connection
+
+3. socket.onmessage
+   - Triggered whenever the server sends data
+   - Not tied to a specific send(); use message type/ID if tracking is needed
+
+4. socket.onerror
+   - Triggered on network/protocol error (not message-level errors)
+
+5. socket.onclose
+   - Triggered when connection is closed (by server or client)
+   - Use to cleanup or trigger reconnection logic
+
+Usage:
+  socket.send(JSON.stringify({ message: "Hello" }))  // Send data to server
+  // The server can send messages at any time → triggers onmessage
+*/
+
 .chat-room-container {
     height: 100vh;
     padding-top: 20px;
@@ -245,3 +270,4 @@ export default {
     background: #a8a8a8;
 }
 </style>
+
