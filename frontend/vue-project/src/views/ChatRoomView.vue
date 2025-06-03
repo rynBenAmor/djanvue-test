@@ -117,19 +117,20 @@ export default {
 
                 // Handle user info message (sent only to this client)
                 if (data.type === 'user_info') {
+                    // User info payload
                     this.userId = data.user_id;
                     this.username = data.username;
                     return;
                 }
 
-                else if (data.is_system) {
+                else if (data.type === 'system_message') {
                     // System message
                     this.messages.push({
                         message: data.message,
                         is_system: true
                     });
-                } else  {
-                    // Regular message
+                } else if (data.type === 'chat_message') {
+                    // chat message
                     this.messages.push({
                         message: data.message,
                         sender_id: data.sender_id,
@@ -164,6 +165,7 @@ export default {
 
             // Send the message to the backend
             this.socket.send(JSON.stringify({
+                type: 'chat_message',
                 message: this.newMessage,
                 sender_id: this.userId,
                 sender_name: this.username

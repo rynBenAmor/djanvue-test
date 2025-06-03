@@ -38,7 +38,7 @@ import uuid
         Display name derived from user_id (e.g., "User#abcd1234")
 
     - 'type' in message_dict
-        Dictates which method on the consumer is triggered
+        indicates which method on the consumer is triggered
         Example: type='chat_message' will call chat_message(self, event)
 
 
@@ -114,6 +114,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def chat_message(self, event):
         await self.send(text_data=json.dumps({
+            'type': 'chat_message',
             'message': event['message'],
             'sender_id': event['sender_id'],
             'sender_name': event['sender_name'],
@@ -124,5 +125,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def system_message(self, event):
         await self.send(text_data=json.dumps({
             'message': event['message'],
+            'type': 'system_message',
             'is_system': True
         }))
