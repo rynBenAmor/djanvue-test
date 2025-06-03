@@ -30,8 +30,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'rest_framework_simplejwt.token_blacklist',
+    'channels',
 
     'quickstart',
+    'chat',
 ]
 
 REST_FRAMEWORK = {
@@ -85,8 +87,16 @@ TEMPLATES = [
     },
 ]
 
+# WSGI and ASGI applications
 WSGI_APPLICATION = 'tutorial.wsgi.application'
+ASGI_APPLICATION = 'tutorial.asgi.application'
 
+# Channel layer (in-memory for dev)
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases

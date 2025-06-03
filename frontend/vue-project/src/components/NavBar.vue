@@ -15,6 +15,9 @@
                     <li class="nav-item">
                         <router-link class="nav-link" to="/blog">blog</router-link>
                     </li>
+                    <li class="nav-item">
+                        <router-link class="nav-link" to="/chat-room">Let's chat</router-link>
+                    </li>
 
                     <li v-if="username" class="nav-item">
                         <span class="nav-link disabled" aria-disabled="true">{{ username }}</span>

@@ -6,6 +6,8 @@ import Login from '../views/LoginView.vue'
 import HomeView from '@/views/HomeView.vue'
 import BlogView from '@/views/BlogListView.vue'
 import BlogPostView from '@/views/BlogPostView.vue'
+import ChatRoomView from '@/views/ChatRoomView.vue'
+
 
 const routes = [
   {
@@ -39,6 +41,14 @@ const routes = [
     meta: {
       requiresAuth: false,
     },
+  },
+  {
+    path: '/chat-room',
+    name: 'chat-room',
+    component: ChatRoomView,
+    meta:{
+      requiresAuth: false, //for now
+    }
   },
 ]
 
