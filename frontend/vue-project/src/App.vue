@@ -1,12 +1,13 @@
 <template>
 
-  <nav-bar></nav-bar>
-  <div v-if="getMessageText" :class="'alert alert-' + getMessageType" class="text-center mt-3">
-    {{ getMessageText }}
-  </div>
+  <nav-bar/>
+
+  <message-alert/>
+
   <div class="container mt-4">
     <!-- Show routed views  -->
     <router-view />
+    
   </div>
 
 </template>
@@ -14,30 +15,12 @@
 <script>
 
 import NavBar from './components/NavBar.vue';
-import { useMessageStore } from './stores/messages';
+import MessageAlert from './components/MessageAlert.vue';
 
 export default {
   name: 'App',
-  components: { NavBar, },
-  data() {
-    return {
-      messageStore: useMessageStore(),
-    }
-  },
-    computed: {
+  components: { NavBar, MessageAlert},
 
-    getMessageText() {
-      return this.messageStore.getMessage || '';  // fallback
-    },
-    getMessageType() {
-      return this.messageStore.getMessageType || 'info';
-    }
-  },
-  watch: {
-    $route() {
-      this.messageStore.clearMessage()
-    }
-  }
 }
 </script>
 
