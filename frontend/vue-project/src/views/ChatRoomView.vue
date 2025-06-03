@@ -110,40 +110,39 @@ export default {
                 this.connectionStatus = 'Error';
             };
 
-this.socket.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    
-    // Handle user info message (sent only to this client)
-    if (data.type === 'user_info') {
-        this.userId = data.user_id;
-        this.username = data.username;
-        return;
-    }
-    
-    // Determine if message is from current user
-    const isCurrentUser = data.sender_id === this.userId;
-    
-    if (data.is_system) {
-        // System message
-        this.messages.push({
-            message: data.message,
-            is_system: true
-        });
-    } else {
-        // Regular message
-        this.messages.push({
-            message: data.message,
-            sender_id: data.sender_id,
-            sender_name: data.sender_name,
-            is_user: isCurrentUser
-        });
-    }
-    
-    this.$nextTick(() => {
-        const container = this.$refs.messagesContainer;
-        container.scrollTop = container.scrollHeight;
-    });
-};
+            this.socket.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+
+                // Handle user info message (sent only to this client)
+                if (data.type === 'user_info') {
+                    this.userId = data.user_id;
+                    this.username = data.username;
+                    return;
+                }
+
+
+
+                if (data.is_system) {
+                    // System message
+                    this.messages.push({
+                        message: data.message,
+                        is_system: true
+                    });
+                } else {
+                    // Regular message
+                    this.messages.push({
+                        message: data.message,
+                        sender_id: data.sender_id,
+                        sender_name: data.sender_name,
+                        
+                    });
+                }
+
+                this.$nextTick(() => {
+                    const container = this.$refs.messagesContainer;
+                    container.scrollTop = container.scrollHeight;
+                });
+            };
         },
         disconnectWebSocket() {
             if (this.socket) {
@@ -170,6 +169,7 @@ this.socket.onmessage = (event) => {
     }
 }
 </script>
+
 
 <style scoped>
 .chat-room-container {
