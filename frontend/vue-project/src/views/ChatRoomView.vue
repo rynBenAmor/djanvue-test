@@ -112,6 +112,8 @@ export default {
 
             this.socket.onmessage = (event) => {
                 const data = JSON.parse(event.data);
+                console.log('WebSocket message received:', data);
+                // Handle different message types
 
                 // Handle user info message (sent only to this client)
                 if (data.type === 'user_info') {
@@ -120,13 +122,13 @@ export default {
                     return;
                 }
 
-                if (data.is_system) {
+                else if (data.is_system) {
                     // System message
                     this.messages.push({
                         message: data.message,
                         is_system: true
                     });
-                } else {
+                } else  {
                     // Regular message
                     this.messages.push({
                         message: data.message,
@@ -136,10 +138,18 @@ export default {
                     });
                 }
 
+                // scroll to the bottom of the messages container after a delay
                 this.$nextTick(() => {
+                setTimeout(() => {
                     const container = this.$refs.messagesContainer;
+                    if (container) {
                     container.scrollTop = container.scrollHeight;
+                    } else {
+                    console.warn('messagesContainer is null');
+                    }
+                }, 0); // even 0ms is enough to yield to the render cycle
                 });
+
             };
         },
 
