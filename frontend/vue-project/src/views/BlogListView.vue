@@ -12,8 +12,8 @@
                 <img :src="post.get_blog_image" class="card-img-top object-fit-contain" style="height: 200px;"
                     :alt="post.title">
                 <div class="card-body">
-                    <h5 class="card-title">{{ post.title }}</h5>
-                    <p class="card-text">{{ truncateText(post.content, 15 ) }}</p>
+                    <h5 class="card-title">{{ titleize(post.title) }}</h5>
+                    <p class="card-text">{{ truncateWords(capFirst(post.content), 10 ) }}</p>
                     <router-link :to="post.get_absolute_url" class="btn btn-primary">Read More</router-link>
                     <p class="card-text">
                         <small class="text-muted">
@@ -29,7 +29,7 @@
 
 <script>
 import axios from 'axios';
-import { truncateText } from '@/utils/utils';
+import { truncateWords, titleize, capFirst } from '@/utils/utils';
 import { BACKEND_URL } from '@/config';
 import LoaderSpinner from '@/components/LoaderSpinner.vue';
 
@@ -61,7 +61,10 @@ export default {
             }
         },
 
-        truncateText, //imported fn
+        //imported utility functions
+        truncateWords, 
+        titleize,
+        capFirst,
     },
 };
 </script>

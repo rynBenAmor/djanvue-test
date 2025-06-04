@@ -1,10 +1,10 @@
 <template>
     <div class="container">
-<h1>post detail</h1>
+        <h1>post detail</h1>
         <div class="row">
 
             <!-- Loader -->
-            <loader-spinner v-if="loading" loading="loading"/>
+            <loader-spinner v-if="loading" loading="loading" />
 
             <div v-else-if="post.id" class="col-12 my-3">
                 <h2 class="display-2"> {{ post.title }} </h2>
@@ -16,7 +16,7 @@
             <div v-else class="alert alert-danger">Post not found.</div>
         </div>
 
-        
+
 
     </div>
 </template>
@@ -27,6 +27,7 @@
 import axios from 'axios';
 import { BACKEND_URL } from '@/config';
 import LoaderSpinner from '@/components/LoaderSpinner.vue';
+import { useHead } from '@vueuse/head';
 
 
 export default {
@@ -49,6 +50,15 @@ export default {
                 const postSlug = this.$route.params.post_slug;
                 const res = await axios.get(`${BACKEND_URL}/blog/posts/${postSlug}/`);
                 this.post = res.data;
+
+                //update SEO
+                useHead({
+                    title: this.post.title,
+                    meta: [
+                        { name: 'description', content: this.post.content },
+                    ]
+                });
+
             } catch (error) {
                 console.error('Error fetching blog post:', error);
                 this.post = {};

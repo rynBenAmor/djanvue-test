@@ -25,6 +25,7 @@ This project is a testing prototype to explore the integration between Vue (with
 * **Axios** – http requests and utility interceptors
 * **Auth guards** – simple route protection and user feedback
 * **Pinia + piniaPluginPersistedstate** – used for global state management (much cleaner than prop/emit chains)
+* **Dynamic SEO using** - using the plugin vueuse/head
 * **Client-side auth** – login, token storage, and access control
 * **Form submission & response handling** – for both text and file data
 * **Options API lifecycle hooks** – used for connection setup, reactivity, etc.
