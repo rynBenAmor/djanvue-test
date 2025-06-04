@@ -8,7 +8,7 @@
             <!-- Display blog posts -->
             <div v-else-if="posts.length === 0" class="alert alert-info">No blog posts available.</div>
             
-            <div v-else v-for="post in posts" :key="post.id" class="card col-4 mb-3">
+            <div v-else v-for="post in posts" :key="post.id" v-memo="post.id" class="card col-4 mb-3">
                 <img :src="post.get_blog_image" class="card-img-top object-fit-contain" style="height: 200px;"
                     :alt="post.title">
                 <div class="card-body">

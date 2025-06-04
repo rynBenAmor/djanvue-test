@@ -1,6 +1,8 @@
 <template>
+    
     <!-- Loader -->
-    <loader-spinner v-if="loading" loading="loading"></loader-spinner>
+    <loader-spinner v-if="loading" loading="loading"/>
+
     <div v-else-if="user.id" class="container mt-4">
         <h1 class="text-center text-success">Welcome, {{ user.username }}!</h1>
         <h2 class="mb-3">Profile Picture</h2>
@@ -30,11 +32,13 @@
 import axios from 'axios';
 import { BACKEND_URL } from '@/config';
 import LoaderSpinner from '@/components/LoaderSpinner.vue';
+import { useHead } from '@vueuse/head'
+
 
 export default {
     name: 'HomeView',
-    components: {LoaderSpinner, },
-    
+    components: { LoaderSpinner, },
+
     data() {
         return {
             user: {},
@@ -47,6 +51,18 @@ export default {
     },
     mounted() {
         this.fetchProfile();
+
+        //dynamic seo
+        useHead({
+            title: 'Welcome | Homepage',
+            meta: [
+                { name: 'description', content: 'Learn more about our team and mission.' },
+                { name: 'keywords', content: 'about, team, mission' },
+                { property: 'og:title', content: 'About Us | MyApp' },
+                { name: 'robots', content: 'index,follow' }
+            ]
+        })
+
     },
     methods: {
         onFileChange(e) {
@@ -59,17 +75,17 @@ export default {
                     Authorization: 'Bearer ' + localStorage.getItem('access_token')
                 }
             })
-            .then(res => {
-                this.user = res.data;
-                this.message = '';
-            })
-            .catch(err => {
-                console.error(err);
-                this.message = 'Failed to load profile.';
-                this.success = false;
-            }).finally(() => {
-                this.loading = false;
-            });
+                .then(res => {
+                    this.user = res.data;
+                    this.message = '';
+                })
+                .catch(err => {
+                    console.error(err);
+                    this.message = 'Failed to load profile.';
+                    this.success = false;
+                }).finally(() => {
+                    this.loading = false;
+                });
         },
         uploadPicture() {
             const formData = new FormData();
