@@ -4,7 +4,7 @@
         <div class="row">
 
             <!-- Loader -->
-             <loader-spinner v-if="loading" loading="loading"></loader-spinner>
+            <loader-spinner v-if="loading" loading="loading"/>
 
             <div v-else-if="post.id" class="col-12 my-3">
                 <h2 class="display-2"> {{ post.title }} </h2>

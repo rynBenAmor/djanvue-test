@@ -3,7 +3,7 @@
         <h2 class="mb-3">Blog Posts</h2>
         <div class="row justify-content-center gap-2">
             <!-- Loader -->
-             <loader-spinner v-if="loading" loading="loading"></loader-spinner>
+            <loader-spinner v-if="loading" loading="loading"/>
             
             <!-- Display blog posts -->
             <div v-else-if="posts.length === 0" class="alert alert-info">No blog posts available.</div>
@@ -29,6 +29,7 @@
 
 <script>
 import axios from 'axios';
+import { truncateText } from '@/utils/utils';
 import { BACKEND_URL } from '@/config';
 import LoaderSpinner from '@/components/LoaderSpinner.vue';
 
@@ -59,11 +60,8 @@ export default {
                 this.loading = false;
             }
         },
-        truncateText(text, length = 100) {
-            if (!text) return '';
-            if (text.length <= length) return text;
-            return text.substring(0, length) + '...';
-        },
+
+        truncateText, //imported fn
     },
 };
 </script>
