@@ -98,28 +98,31 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         data = json.loads(text_data)
-        message = data['message']
-        
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                'type': 'chat_message',
-                'message': message,
-                'sender_id': self.user_id,
-                'sender_name': self.username,
 
-            }
-        )
+        if 'image_url' in data:
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'image_message',
+                    'image_url': data['image_url'],
+                    'messageColor': data['messageColor'],
+                    'sender_id': self.user_id,
+                    'sender_name': self.username,
+                }
+                )
+            
+        elif 'message' in data:
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'chat_message',
+                    'message': data['message'],
+                    'messageColor': data['messageColor'],
+                    'sender_id': self.user_id,
+                    'sender_name': self.username,
 
-
-    async def chat_message(self, event):
-        await self.send(text_data=json.dumps({
-            'type': 'chat_message',
-            'message': event['message'],
-            'sender_id': event['sender_id'],
-            'sender_name': event['sender_name'],
-
-        }))
+                }
+            )
 
             
     async def system_message(self, event):
@@ -127,4 +130,25 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'message': event['message'],
             'type': 'system_message',
             'is_system': True
+        }))
+
+    
+    async def chat_message(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'chat_message',
+            'message': event['message'],
+            'messageColor': event['messageColor'],
+            'sender_id': event['sender_id'],
+            'sender_name': event['sender_name'],
+
+        }))
+
+    
+    async def image_message(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'image_message',
+            'image_url': event['image_url'],
+            'messageColor': event['messageColor'],
+            'sender_id': event['sender_id'],
+            'sender_name': event['sender_name'],
         }))
