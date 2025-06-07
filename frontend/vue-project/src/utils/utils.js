@@ -39,6 +39,7 @@ export {
     isToday,
     formatDate,       // Format a date string nicely
     parseDate,
+    nowTimestamp,
 
 
     /* 🧰 Misc Utilities */
@@ -179,6 +180,28 @@ function formatDuration(seconds) {
 function parseDate(dateStr) {
     return new Date(dateStr);
 }
+
+function nowTimestamp({ includeDate = false } = {}) {
+  const now = new Date();
+
+  const pad = (n) => n.toString().padStart(2, '0');
+
+  const hours = pad(now.getHours());
+  const minutes = pad(now.getMinutes());
+
+  const time = `${hours}:${minutes}`;
+
+  if (!includeDate) return time;
+
+  const day = pad(now.getDate());
+  const month = pad(now.getMonth() + 1); // Months are 0-based
+  const year = now.getFullYear();
+
+  const date = `${day}/${month}/${year}`;
+
+  return `${date} ${time}`;
+}
+
 
 function isToday(date) {
     const today = new Date();

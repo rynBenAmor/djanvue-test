@@ -1,6 +1,7 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 import uuid
+from datetime import datetime
 """
 🔧 Django Channels - WebSocket Consumer Guide
 
@@ -32,14 +33,18 @@ import uuid
         The name of the chat group all users connect to (e.g., 'chat_room')
 
     - self.user_id
-        A short, random 8-character unique identifier for the user (generated with UUID)
+        A short, random 8-character unique identifier for the user (generated with UUID per session connect), 
+        sent from server to client on connect, after that the client sends to server it on every payload
 
     - self.username
         Display name derived from user_id (e.g., "User#abcd1234")
 
     - 'type' in message_dict
-        indicates which method on the consumer is triggered
+        indicates which method on the consumer is triggered to make a case statement in client side interface
         Example: type='chat_message' will call chat_message(self, event)
+    
+    - 'messageColor' :
+        generated/sent (and saved to sessionStorage) from client side to the server and serves like user id
 
 
 📚 Common Actions (Cheat Sheet):
@@ -78,8 +83,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             {
                 'type': 'system_message',
+                'sent_at': datetime.now().strftime("%H:%M"),
+                'is_system': True, #flag that this is a system message
+
                 'message': f"{self.username} has joined the chat",
-                'is_system': True #flag that this is a system message
+                
             }
         )
 
@@ -91,8 +99,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             {
                 'type': 'system_message',
+                'sent_at': datetime.now().strftime("%H:%M"),
+                'is_system': True,
+
                 'message': f"{self.username} has left the chat",
-                'is_system': True
+                
             }
         )
 
@@ -104,8 +115,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 self.room_group_name,
                 {
                     'type': 'image_message',
+                    'sent_at': datetime.now().strftime("%H:%M"),
+
                     'image_url': data['image_url'],
-                    'messageColor': data['messageColor'],
+                    'messageColor': data['messageColor'],                    
                     'sender_id': self.user_id,
                     'sender_name': self.username,
                 }
@@ -116,8 +129,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 self.room_group_name,
                 {
                     'type': 'chat_message',
+                    'sent_at': datetime.now().strftime("%H:%M"),
+
                     'message': data['message'],
-                    'messageColor': data['messageColor'],
+                    'messageColor': data['messageColor'],                    
                     'sender_id': self.user_id,
                     'sender_name': self.username,
 
@@ -127,17 +142,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
             
     async def system_message(self, event):
         await self.send(text_data=json.dumps({
-            'message': event['message'],
             'type': 'system_message',
-            'is_system': True
+            'sent_at': datetime.now().strftime("%H:%M"),
+            'is_system': True,
+
+            'message': event['message'],
         }))
 
     
     async def chat_message(self, event):
         await self.send(text_data=json.dumps({
             'type': 'chat_message',
+            'sent_at': datetime.now().strftime("%H:%M"),
+
             'message': event['message'],
-            'messageColor': event['messageColor'],
+            'messageColor': event['messageColor'],            
             'sender_id': event['sender_id'],
             'sender_name': event['sender_name'],
 
@@ -147,6 +166,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def image_message(self, event):
         await self.send(text_data=json.dumps({
             'type': 'image_message',
+            'sent_at': datetime.now().strftime("%H:%M"),
+
             'image_url': event['image_url'],
             'messageColor': event['messageColor'],
             'sender_id': event['sender_id'],

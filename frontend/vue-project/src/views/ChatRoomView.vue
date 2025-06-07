@@ -20,7 +20,11 @@
                         <div v-for="(message, index) in messages" :key="index" class="message-wrapper">
                             <!-- System messages -->
                             <div v-if="message.is_system" class="system-message text-center mb-3">
-                                <span class="badge bg-secondary">{{ message.message }}</span>
+                                <span class="badge bg-secondary">
+                                    {{ message.message }} - <small class="small text-muted">{{ message.sent_at
+                                        }}</small>
+                                </span>
+
                             </div>
 
                             <!-- User messages -->
@@ -33,7 +37,7 @@
                                         class="message-sender small text-muted">
                                         {{ message.sender_name }}
                                     </div>
-                                    <div class="message-content">
+                                    <div class="message-content d-flex flex-column">
                                         <template v-if="message.image_url">
                                             <img :src="'http://127.0.0.1:8000' + message.image_url" alt="chat image"
                                                 style="max-width: 200px; max-height: 200px; cursor: pointer;"
@@ -42,6 +46,9 @@
                                         <template v-else>
                                             {{ message.message }}
                                         </template>
+
+                                        <small class="small text-muted ms-auto mt-1">{{ message.sent_at }}</small>
+
                                     </div>
                                 </div>
                             </div>
@@ -93,6 +100,7 @@
 import { BACKEND_URL } from '@/config';
 import axios from 'axios';
 import { Modal } from 'bootstrap/dist/js/bootstrap.bundle.min';
+
 
 
 export default {
@@ -216,6 +224,7 @@ export default {
                     // System message
                     this.messages.push({
                         message: data.message,
+                        sent_at: data.sent_at,
                         is_system: true
                     });
 
@@ -224,6 +233,7 @@ export default {
                     this.messages.push({
                         message: data.message,
                         messageColor: data.messageColor,
+                        sent_at: data.sent_at,
                         sender_id: data.sender_id,
                         sender_name: data.sender_name,
 
@@ -232,6 +242,7 @@ export default {
                     this.messages.push({
                         image_url: data.image_url,
                         messageColor: data.messageColor,
+                        sent_at: data.sent_at,
                         sender_id: data.sender_id,
                         sender_name: data.sender_name,
                     })
@@ -331,6 +342,7 @@ export default {
             modal.show();
 
         },
+
     }
 }
 </script>
