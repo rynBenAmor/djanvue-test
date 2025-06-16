@@ -22,7 +22,7 @@
                             <div v-if="message.is_system" class="system-message text-center mb-3">
                                 <span class="badge bg-secondary">
                                     {{ message.message }} - <small class="small text-muted">{{ message.sent_at
-                                        }}</small>
+                                    }}</small>
                                 </span>
 
                             </div>
@@ -60,8 +60,8 @@
 
                         <form @submit.prevent="sendMessage" class="d-flex align-items-center">
                             <input ref="chatInputRef" v-model="newMessage" type="text" class="form-control me-2"
-                                placeholder="Type your message..." :disabled="!isConnected"
-                                @keyup.enter="sendMessage" />
+                                placeholder="Type your message..." :disabled="!isConnected" @keyup.enter="sendMessage"
+                                autofocus="true" />
 
                             <label for="imageInput" class="btn btn-outline-secondary me-2 mb-0"
                                 style="padding: 0.375rem 0.75rem;">
@@ -76,6 +76,7 @@
                         </form>
 
                     </div>
+
                 </div>
             </div>
         </div>
@@ -105,6 +106,7 @@ import { Modal } from 'bootstrap/dist/js/bootstrap.bundle.min';
 
 export default {
     name: 'ChatRoomView',
+
     data() {
         return {
             newMessage: '',
@@ -120,10 +122,11 @@ export default {
 
         }
     },
+    created() {
+        this.connectWebSocket(); //connect and attach event handlers (listeners)
+    },
 
     mounted() {
-
-        this.connectWebSocket(); //connect and attach event handlers (listeners)
 
         this.$refs.chatInputRef.focus();
 
@@ -176,6 +179,7 @@ export default {
     beforeUnmount() {
         this.disconnectWebSocket();
     },
+
     methods: {
 
         connectWebSocket() {
@@ -249,17 +253,7 @@ export default {
                 }
 
 
-                // scroll to the bottom of the messages container after a delay
-                this.$nextTick(() => {
-                    setTimeout(() => {
-                        const container = this.$refs.messagesContainer;
-                        if (container) {
-                            container.scrollTop = container.scrollHeight;
-                        } else {
-                            console.warn('messagesContainer is null');
-                        }
-                    }, 0); // even 0ms is enough to yield to the render cycle
-                });
+                this.scrollToBottom()
 
             };
         },
@@ -321,9 +315,24 @@ export default {
             }
         },
 
+        scrollToBottom() {
+            // scroll to the bottom of the messages container after a delay
+            this.$nextTick(() => {
+                setTimeout(() => {
+                    const container = this.$refs.messagesContainer;
+                    if (container) {
+                        container.scrollTop = container.scrollHeight;
+                    } else {
+                        console.warn('messagesContainer is null');
+                    }
+                }, 50); // even 0ms is enough to yield to the render cycle
+            });
+        },
+
         isCurrentUser(senderId) {
             return senderId === this.userId;
         },
+        
         openImageModal(src) {
             this.modalImageSrc = src;
 

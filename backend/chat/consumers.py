@@ -39,12 +39,15 @@ from datetime import datetime
     - self.username
         Display name derived from user_id (e.g., "User#abcd1234")
 
-    - 'type' in message_dict
+    - 'type' ('image_message', 'chat_message', 'system_message',) from three different receive handlers:
         indicates which method on the consumer is triggered to make a case statement in client side interface
         Example: type='chat_message' will call chat_message(self, event)
     
     - 'messageColor' :
         generated/sent (and saved to sessionStorage) from client side to the server and serves like user id
+    
+    - 'image_url':
+        only in 'image_message' handler (self explanatory)
 
 
 📚 Common Actions (Cheat Sheet):
@@ -152,7 +155,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     
     async def chat_message(self, event):
         await self.send(text_data=json.dumps({
-            'type': 'chat_message',
+            'type': 'chat_message', 
             'sent_at': datetime.now().strftime("%H:%M"),
 
             'message': event['message'],
@@ -165,7 +168,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     
     async def image_message(self, event):
         await self.send(text_data=json.dumps({
-            'type': 'image_message',
+            'type': 'image_message', 
             'sent_at': datetime.now().strftime("%H:%M"),
 
             'image_url': event['image_url'],

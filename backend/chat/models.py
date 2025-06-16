@@ -1,15 +1,33 @@
 # chat/models.py
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser
+from quickstart.models import User
 
 
-class ChatMessage(models.Model):
-    user = models.ForeignKey('quickstart.User', on_delete=models.CASCADE)
-    message = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
+
+class ChatGroup(models.Model):
+    groupe_name = models.CharField(unique=True, max_length=255)
 
     def __str__(self):
-        return f"{self.user.username}: {self.message[:30]}"
+        return self.groupe_name
+    
 
+class GroupMessage(models.Model):
+    '''Model definition for GroupMessage.'''
+    group = models.ForeignKey(ChatGroup, related_name='chat_messages', on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    body = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        '''Meta definition for GroupMessage.'''
+
+        verbose_name = 'GroupMessage'
+        verbose_name_plural = 'GroupMessages'
+        ordering = ['created_at']
+
+    def __str__(self):
+        pass
 
 
 """"
